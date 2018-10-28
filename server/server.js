@@ -1,7 +1,8 @@
 
-var express = require('express');
-var body_parser = require('body-parser');
-var { ObjectID } = require('mongodb');
+const _ = require('lodash');
+const express = require('express');
+const body_parser = require('body-parser');
+const { ObjectID } = require('mongodb');
 
 
 var { db } = require('./db/mongoose');
@@ -52,6 +53,7 @@ app.get('/todos/:id', (req,res)=>{
     }).catch((err)=> res.status(400).send(err));
 });
 
+// deleting a todo by id from TodoApp
 app.delete('/todos/:id', (req, res)=> {
     var id = req.params.id;
     // Id Validation
@@ -64,6 +66,28 @@ app.delete('/todos/:id', (req, res)=> {
             res.status(404).send();
         }
         res.status(200).send(JSON.stringify({todos}, undefined, 2));
+    }).catch((e)=> res.status(400).send(e));
+});
+
+//updating a todo by id to TodoApp
+app.patch('/todos/:id', (req, res)=> {
+    var id = req.params.id;
+    var body = _.pick(req.body, ['text','completed']);
+    //Id Validation
+    if(!ObjectID.isValid(id)) {
+        res.status(404).send();
+    }
+    //check completed condition and updating completed At and completed states
+    if(_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    }
+    else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+    // Updating the record by id
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todos)=> {
+        res.status(200).send(todos);
     }).catch((e)=> res.status(400).send(e));
 });
 
