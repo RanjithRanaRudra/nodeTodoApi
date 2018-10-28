@@ -1,6 +1,8 @@
 
 var express = require('express');
 var body_parser = require('body-parser');
+var { ObjectID } = require('mongodb');
+
 
 var { db } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
@@ -34,6 +36,37 @@ app.get('/todos', (req,res)=>{
     }).catch((err)=> res.status(400).send(err));
 });
 
+// get todos by id from TodoApp
+app.get('/todos/:id', (req,res)=>{
+    var id = req.params.id;
+    //  Id Vaidation
+    if(!ObjectID.isValid(id)) {
+        res.status(404).send();
+    }
+    //getting result
+    Todo.findById(id).then((todos)=> {
+        if(!todos) {
+            res.status(404).send();
+        }
+        res.send(JSON.stringify({todos}, undefined, 2));
+    }).catch((err)=> res.status(400).send(err));
+});
+
+app.delete('/todos/:id', (req, res)=> {
+    var id = req.params.id;
+    // Id Validation
+    if(!ObjectID.isValid(id)) {
+        res.status(404).send();
+    }
+    // Delete the record by id
+    Todo.findByIdAndRemove(id).then((todos)=>{
+        if(!todos) {
+            res.status(404).send();
+        }
+        res.status(200).send(JSON.stringify({todos}, undefined, 2));
+    }).catch((e)=> res.status(400).send(e));
+});
+
 app.listen(port, ()=> {
     console.log(`Server is running on port : ${port}`);
-})
+});
