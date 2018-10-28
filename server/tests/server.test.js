@@ -63,6 +63,21 @@ describe('Server', () => {
                 }).catch((e)=>done(e));
             });
         });
+        it('should create a todo with invalid data', (done) => {
+            request(app)
+            .post('todos')
+            .send({})
+            .expect(404)
+            .end((err, res)=> {
+                if(err) {
+                    return done(err);
+                }
+                Todo.find({}).then((todos)=> {
+                    expect(todos.length).toBe(2);
+                    done();
+                }).catch((e)=>done(e));
+            });
+        });
     });    
 });
 
