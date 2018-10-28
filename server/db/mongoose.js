@@ -1,14 +1,25 @@
+/**
+ * Import 
+ * source: config files
+ * dtart
+ */
+var {PORT} = require('../config/config');
+var {MONGODB_URI} = require('../config/config');
+ /**
+ * Import 
+ * source: config files
+ * end
+ */
+
 var mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 
-mongoose.connect(process.env.MONGOURI||'mongodb://localhost:27017/TodoApp', { useNewUrlParser: true });
-
-var db = mongoose.connection;
+/* var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  // we're connected!
-  console.log('Connected');
-});
+   console.log('Connected');
+}); */
 
-module.exports = { db };
+module.exports = { mongoose };
 
 // db.close();

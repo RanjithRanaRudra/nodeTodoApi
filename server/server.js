@@ -1,18 +1,54 @@
 
+/**
+ * Import 
+ * source: config files
+ * dtart
+ */
+// require('./config/config');
+var {PORT} = require('./config/config');
+var {MONGODB_URI} = require('./config/config');
+ /**
+ * Import 
+ * source: config files
+ * end
+ */
+
+/**
+ * Import 
+ * source: 3rd Party & Native Libraries
+ * start
+ */
 const _ = require('lodash');
 const express = require('express');
 const body_parser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
+/**
+ * Import 
+ * source: 3rd Party & Native Libraries
+ * end
+ */
 
-var { db } = require('./db/mongoose');
+ /**
+  * Import
+  * source: same  or other Project Files
+  * start
+  */
+var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
+
+/**
+  * Import
+  * source: same  or other Project Files
+  * end
+  */
 
 var app = express();
 
+var port = process.env.PORT;
+
 app.use(body_parser.json());
 
-var port = process.env.PORT || 3000;
 app.get('/', (req, res)=> {
     res.send('Hello World')
 });
