@@ -36,6 +36,7 @@ const { ObjectID } = require('mongodb');
   */
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
+var { User } = require('./models/user');
 
 /**
   * Import
@@ -124,6 +125,18 @@ app.patch('/todos/:id', (req, res)=> {
     // Updating the record by id
     Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todos)=> {
         res.status(200).send(todos);
+    }).catch((e)=> res.status(400).send(e));
+});
+
+// post a new user in todoApp
+app.post('/users', (req, res)=> {
+    var body = _.pick(req.body,['email', 'password']);
+    console.log('body :', body);
+    //posting the data to model 
+    var user = new User(body);
+    //saving userdata to TodoApp
+    user.save().then((user) => {
+        res.send(user);
     }).catch((e)=> res.status(400).send(e));
 });
 
