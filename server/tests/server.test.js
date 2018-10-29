@@ -152,7 +152,6 @@ describe('Server', () => {
             var text = "text updated throught mocha";
             request(app)
             .patch(`/todos/${id}`)
-            .set('Accept', 'application/json')
             .send({
                 completed: true,
                 text
@@ -175,7 +174,6 @@ describe('Server', () => {
             var text = "text updated throught mocha";
             request(app)
             .patch(`/todos/${id}`)
-            .set('Accept', 'application/json')
             .send({
                 completed: false,
                 text,
