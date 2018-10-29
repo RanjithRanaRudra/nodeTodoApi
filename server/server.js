@@ -131,12 +131,13 @@ app.patch('/todos/:id', (req, res)=> {
 // post a new user in todoApp
 app.post('/users', (req, res)=> {
     var body = _.pick(req.body,['email', 'password']);
-    console.log('body :', body);
     //posting the data to model 
     var user = new User(body);
     //saving userdata to TodoApp
-    user.save().then((user) => {
-        res.send(user);
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token)=>{
+        res.header('x-auth', token).send(user);
     }).catch((e)=> res.status(400).send(e));
 });
 
