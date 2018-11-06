@@ -12,6 +12,7 @@ var {MONGODB_URI} = require('../config/config');
  */
 
 var mongoose = require('mongoose');
+mongoose.set('useCreateIndex', true);
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 
 /* var db = mongoose.connection;

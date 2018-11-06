@@ -23,9 +23,7 @@ const todos = [
 describe('Server', () => {
     beforeEach((done) => {
         // Todo.remove({}).then(() => done()); ---------- depecreated
-        Todo.deleteMany({}).then(()=> {
-            return Todo.insertMany(todos);
-        }).then(()=> done());
+        Todo.deleteMany({}).then(()=> Todo.insertMany(todos)).then(()=> done());
     });
     // test - create a new todo 
     describe('#POST/todos', () => {

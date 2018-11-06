@@ -88,7 +88,7 @@ app.get('/todos/:id', (req,res)=>{
             res.status(404).send();
         }
         res.send(JSON.stringify({todos}, undefined, 2));
-    }).catch((err)=> res.status(400).send(err));
+    }).catch((err)=> res.send(err));
 });
 
 // deleting a todo by id from TodoApp
