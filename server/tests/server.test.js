@@ -4,27 +4,15 @@ const {app} = require('../server');
 const request = require('supertest');
 const expect = require('expect');
 const {ObjectID} = require('mongodb');
+const assert = require('assert');
 
 const {Todo} = require('../models/todo');
+const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
 
-const todos = [
-    {
-        _id : new ObjectID(),
-        text : 'this is first todo'
-    },
-    {
-        _id : new ObjectID(),
-        text : 'this is second todo',
-        completed: true,
-        completedAt: 333
-    }
-];
 
 describe('Server', () => {
-    beforeEach((done) => {
-        // Todo.remove({}).then(() => done()); ---------- depecreated
-        Todo.deleteMany({}).then(()=> Todo.insertMany(todos)).then(()=> done());
-    });
+    beforeEach(populateUsers);
+    beforeEach(populateTodos);
     // test - create a new todo 
     describe('#POST/todos', () => {
         it('should create a new todo', (done) => {
@@ -113,7 +101,6 @@ describe('Server', () => {
             .delete(`/todos/${id}`)
             .expect(200)
             .expect((res)=> {
-                console.log('res :', JSON.parse(res.text).todos._id);
                 expect(JSON.parse(res.text).todos._id).toBe(id);
             })
             .end((err,res)=> {
@@ -145,7 +132,6 @@ describe('Server', () => {
         it('should update the todo', (done) => {
             //grab id of first item
             var id = todos[0]._id.toHexString();
-            console.log(id);
             //update text, set completed true
             var text = "text updated throught mocha";
             request(app)
@@ -158,7 +144,6 @@ describe('Server', () => {
             .expect(200)
             //text is changed, completed is true, completedAt is a number
             .expect((res)=> {
-                console.log('typeof JSON.parse(res.text).completedAt :',  typeof JSON.parse(res.text).completedAt);
                 expect(JSON.parse(res.text).text).toBe(text);
                 expect(JSON.parse(res.text).completed).toBeTruthy();
                 expect(typeof JSON.parse(res.text).completedAt).toBe('number');
@@ -180,10 +165,33 @@ describe('Server', () => {
             .expect(200)
             //text is changed, completed is false, completedAt is null
             .expect((res)=> {
-                console.log('JSON.parse(res.text).completedAt :', JSON.parse(res.text).completedAt);
+                // console.log('JSON.parse(res.text).completedAt :', res.body);
                 expect(JSON.parse(res.text).text).toBe(text);
                 expect(JSON.parse(res.text).completed).toBeFalsy();
                 expect(JSON.parse(res.text).completedAt).toBeNull();
+            })
+            .end(done);
+        });
+    });
+
+    describe('#POST/users/me', () => {
+        it('should return user if authenticated', (done) => {
+            request(app)
+            .get('/users/me')
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(200)
+            .expect((res)=>{
+                assert.deepStrictEqual(res.body._id, users[0]._id.toHexString());
+                assert.deepStrictEqual(res.body.email, users[0].email);
+            })
+            .end(done);
+        });
+        it('should return 401 if not authenticated', (done) => {
+            request(app)
+            .get('/users/me')
+            .expect(401)
+            .expect((res)=>{
+                assert.deepStrictEqual(res.body, {});
             })
             .end(done);
         });

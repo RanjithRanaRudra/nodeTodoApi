@@ -24,8 +24,8 @@ var user_schema = new mongoose.Schema({
     },
     tokens: [{
         access: {
-    type: String,
-    required: true            
+            type: String,
+            required: true            
         },
         token: {
             type: String,
